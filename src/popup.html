@@ -7,7 +7,46 @@
     <title>VulnTotal Home</title>
   </head>
   <body>
-    <div class="container"></div>
+    <div class="container">
+      <nav
+        class="navbar is-dark mb-5 border-bottom-radius"
+        role="navigation"
+        aria-label="main navigation"
+      >
+        <div class="navbar-brand ml-3">
+          <a class="navbar-item is-size-4 has-text-weight-bold">VulnTotal</a>
+          <a
+            role="button"
+            class="navbar-burger"
+            id="nav-burger"
+            aria-label="menu"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div class="navbar-menu" id="navMenu">
+          <div class="navbar-end mr-3">
+            <a class="navbar-item" id="fullscreen-button">
+              <i class="fa fa-expand mr-2"></i>
+              Full Screen
+            </a>
+            <a class="navbar-item" id="refresh-button">
+              <i class="fa fa-arrows-rotate mr-2"></i>
+              Refresh
+            </a>
+            <a class="navbar-item" id="settings-button">
+              <i class="fa fa-gear mr-2"></i>
+              Settings
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
     <script type="module" src="script.js"></script>
   </body>
 </html>
