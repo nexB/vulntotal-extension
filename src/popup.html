@@ -46,6 +46,57 @@
           </div>
         </div>
       </nav>
+      <section class="section pt-0">
+        <article class="panel is-info">
+          <div class="panel-heading py-2 is-size-6">
+            <div class="dropdown is-hoverable has-text-weight-normal">
+              <div class="dropdown-trigger">
+                <i class="fa fa-question-circle ml-2"></i>
+              </div>
+              <div
+                class="dropdown-menu dropdown-instructions-width"
+                id="dropdown-menu4"
+                role="menu"
+              >
+                <div class="dropdown-content dropdown-instructions-box-shadow">
+                  <div class="dropdown-item">
+                    A PURL is a URL string used to identify and locate a
+                    software package in a mostly universal and uniform way
+                    across programming languages, package managers, packaging
+                    conventions, tools, APIs and databases.
+                    <a href="https://github.com/package-url">more on PURL</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            Search for package vulnerabilities
+          </div>
+          <div class="panel-block">
+            <div class="pb-3 width-100-pct">
+              <div class="field has-addons mt-3">
+                <div class="control width-100-pct">
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Package url (PURL)"
+                    class="input"
+                    required
+                    id="id_search"
+                  />
+                </div>
+                <div class="control">
+                  <button class="button is-link" id="submit_vuln">
+                    <span class="icon is-small">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <span>Search</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
     </div>
     <script type="module" src="script.js"></script>
   </body>
