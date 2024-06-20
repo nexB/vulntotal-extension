@@ -15,4 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  const fullscreenButton = document.getElementById("fullscreen-button");
+  fullscreenButton.addEventListener("click", async function () {
+    chrome.tabs.create({ url: "popup.html" });
+  });
 });
