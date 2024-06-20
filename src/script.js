@@ -724,6 +724,13 @@ document.addEventListener("DOMContentLoaded", function () {
   fullscreenButton.addEventListener("click", async function () {
     chrome.tabs.create({ url: "popup.html" });
   });
+
+  const refreshButton = document.getElementById("refresh-button");
+  refreshButton.addEventListener("click", async function () {
+    clearTable();
+    hideResultsTable();
+    showHeroDiv();
+  });
 });
 
 const clearTable = () => {
