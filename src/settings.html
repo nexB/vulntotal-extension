@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html data-theme="light">
+  <head>
+    <link rel="stylesheet" href="static/css/bulma.css" />
+    <link rel="stylesheet" href="static/css/custom.css" />
+    <link rel="stylesheet" href="static/css/font-awesome-all.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav
+        class="navbar is-dark mb-5 border-bottom-radius"
+        role="navigation"
+        aria-label="main navigation"
+      >
+        <div class="navbar-brand ml-3">
+          <a class="navbar-item is-size-4 has-text-weight-bold">VulnTotal</a>
+          <a
+            role="button"
+            class="navbar-burger"
+            id="nav-burger"
+            aria-label="menu"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div class="navbar-menu" id="navMenu">
+          <div class="navbar-end mr-3">
+            <a class="navbar-item" id="back-button">
+              <i class="fa fa-arrow-left mr-2" aria-hidden="true"></i>
+              Back to Home Page
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <section class="section pt-0">
+        <div class="field">
+          <label class="label">GitHub Token</label>
+          <div class="control has-icons-left has-icons-right">
+            <input class="input" type="text" placeholder="GitHub Token" />
+            <span class="icon is-small is-right">
+              <i class="fa-solid fa-key"></i>
+            </span>
+          </div>
+          <p class="help is-danger is-hidden">This key is invalid</p>
+        </div>
+
+        <div class="field">
+          <label class="label">VulnerableCode Token</label>
+          <div class="control has-icons-left has-icons-right">
+            <input
+              class="input"
+              type="text"
+              placeholder="VulnerableCode Token"
+            />
+            <span class="icon is-small is-right">
+              <i class="fa-solid fa-key"></i>
+            </span>
+          </div>
+          <p class="help is-danger is-hidden">This key is invalid</p>
+        </div>
+
+        <div class="field">
+          <label class="label">Exclude DataSources</label>
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" />
+              Deps
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              GitHub
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              GitLab
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              OSS_Index
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              OSV
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              SafetyDb
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              Snyk
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              VulnerableCode
+            </label>
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-link">Submit</button>
+          </div>
+          <div class="control">
+            <button class="button is-link is-light">Cancel</button>
+          </div>
+        </div>
+        <footer class="footer">
+          <div class="content has-text-centered">
+            <p>
+              VulnTotal by <strong>VulnerableCode</strong> is free software by
+              <a href="https://github.com/nexB/vulnerablecode">
+                nexB Inc. and others</a
+              >
+              | Source code license:
+              <a
+                href="https://github.com/nexB/vulnerablecode/blob/main/apache-2.0.LICENSE"
+                >Apache-2.0</a
+              >
+              | Data license:
+              <a
+                href="https://github.com/nexB/vulnerablecode/blob/main/cc-by-sa-4.0.LICENSE"
+                >CC-BY-SA-4.0</a
+              >
+              | <a href="/tos">Terms of Service</a>
+            </p>
+          </div>
+        </footer>
+      </section>
+    </div>
+  </body>
+</html>
