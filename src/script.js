@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
   settingsButton.addEventListener("click", async function () {
     let queryOptions = { active: true };
     chrome.tabs.query(queryOptions, ([tab]) => {
-      if (tab.title === "VulnTotal Home") {
+      if (String(tab.title).includes("VulnTotal")) {
         chrome.tabs.update({ url: "settings.html" });
       } else {
         chrome.tabs.create({ url: "settings.html" });
@@ -74,7 +74,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const fullscreenButton = document.getElementById("fullscreen-button");
   fullscreenButton.addEventListener("click", async function () {
-    chrome.tabs.create({ url: "popup.html" });
+    let queryOptions = { active: true };
+    chrome.tabs.query(queryOptions, ([tab]) => {
+      if (String(tab.title).includes("VulnTotal")) {
+        chrome.tabs.update({ url: "popup.html" });
+      } else {
+        chrome.tabs.create({ url: "popup.html" });
+      }
+    });
   });
 
   const refreshButton = document.getElementById("refresh-button");
