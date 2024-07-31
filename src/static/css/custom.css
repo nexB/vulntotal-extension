@@ -587,3 +587,19 @@ th {
   word-wrap: break-word;
   max-width: 20vw;
 }
+
+.datasource-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.datasource-container img {
+  margin-bottom: 8px;
+}
+
+.datasource-container p {
+  margin: 0;
+}

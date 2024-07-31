@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function () {
       let rowHtml = `
       <tr>
         <td>${row.aliases[0]}</td>
-        <td>${source}</td>
-        <td>${row.aliases}</td>
-        <td>${row.affected_versions}</td>
-        <td>${row.fixed_versions}</td>
+        <td>${getDatasourceLogo(source)}</td>
+        <td>${formatCommaSeparated(row.aliases)}</td>
+        <td>${formatCommaSeparated(row.affected_versions)}</td>
+        <td>${formatCommaSeparated(row.fixed_versions)}</td>
       </tr>
       `;
       var tableRef = document
@@ -132,4 +132,69 @@ const hideHeroDiv = () => {
 const showHeroDiv = () => {
   const heroDiv = document.getElementById("hero-div");
   heroDiv.classList.remove("is-hidden");
+};
+
+const formatCommaSeparated = (values) => {
+  let output = "<div class='tags'>";
+  values.forEach((element) => {
+    output += `<span class='tag is-hoverable'>${element}</span>`;
+  });
+  output += "</div>";
+  return output;
+};
+
+const getDatasourceLogo = (datasource) => {
+  let output = '<div class="datasource-container">';
+
+  switch (datasource) {
+    case "deps":
+      output += '<figure class="image is-48x48">';
+      output += '<img src="static/images/deps_logo.png" alt="deps">';
+      output += "</figure>";
+      output += "<p>deps.dev</p>";
+      break;
+    case "safetydb":
+      output += '<figure class="image is-48x48">';
+      output += '<img src="static/images/safetydb_logo.png" alt="safetydb">';
+      output += "</figure>";
+      output += "<p>Safety DB</p>";
+      break;
+    case "oss_index":
+      output += '<figure class="image is-64x64">';
+      output += '<img src="static/images/oss_index_logo.png" alt="oss_index">';
+      output += "</figure>";
+      break;
+    case "osv":
+      output += '<figure class="image is-64x64">';
+      output += '<img src="static/images/osv_logo.jpg" alt="osv">';
+      output += "</figure>";
+      break;
+    case "snyk":
+      output += '<figure class="image is-64x64">';
+      output += '<img src="static/images/snyk_logo.svg" alt="snyk">';
+      output += "</figure>";
+      break;
+    case "gitlab":
+      output += '<figure class="image is-64x64">';
+      output += '<img src="static/images/gitlab_logo.png" alt="gitlab">';
+      output += "</figure>";
+      break;
+    case "github":
+      output += '<figure class="image is-64x64">';
+      output += '<img src="static/images/github_logo.png" alt="github">';
+      output += "</figure>";
+      break;
+    case "vulnerablecode":
+      output += '<figure class="image is-48x48">';
+      output +=
+        '<img src="static/images/vulnerablecode_logo.png" alt="vulnerablecode">';
+      output += "</figure>";
+      output += "<p>VulnerableCode</p>";
+      break;
+    default:
+      break;
+  }
+
+  output += "</div>";
+  return output;
 };
