@@ -3,8 +3,22 @@
   "version": "1.0.0",
   "description": "Vulntotal Browser Extension",
   "manifest_version": 3,
-  "action": {
-    "default_popup": "popup.html"
+  "cross_origin_embedder_policy": {
+    "value": "require-corp"
   },
-  "permissions": ["tabs"]
+  "cross_origin_opener_policy": {
+    "value": "same-origin"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Vulntotal"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self' 'wasm-unsafe-eval'"
+  },
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

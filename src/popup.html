@@ -14,7 +14,7 @@
         aria-label="main navigation"
       >
         <div class="navbar-brand ml-3">
-          <a class="navbar-item is-size-4 has-text-weight-bold">VulnTotal</a>
+          <a class="navbar-item is-size-4 has-text-weight-bold"> VulnTotal </a>
           <a
             role="button"
             class="navbar-burger"
@@ -47,6 +47,7 @@
         </div>
       </nav>
       <section class="section pt-0">
+        <div id="notification-container" style="display: none"></div>
         <article class="panel is-info">
           <div class="panel-heading py-2 is-size-6">
             <div class="dropdown is-hoverable has-text-weight-normal">
@@ -101,6 +102,7 @@
           <progress
             class="progress is-info"
             id="extension-loading"
+            value="0"
             max="100"
           ></progress>
         </div>
@@ -120,24 +122,45 @@
             </p>
           </div>
         </section>
+        <div class="container is-flex is-justify-content-center my-5">
+          <div class="dropdown is-hidden" id="data-source-dropdown">
+            <div class="dropdown-trigger">
+              <button
+                class="button"
+                aria-haspopup="true"
+                aria-controls="dropdown-menu"
+              >
+                <span>Filter by Data Source</span>
+                <span class="icon is-small">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content" id="dropdown-content">
+                <a href="#" class="dropdown-item" data-source="all">All</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-container is-hidden" id="table-div">
+          <table
+            class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+            id="results-table"
+          >
+            <thead>
+              <tr>
+                <th>CVE</th>
+                <th>Datasource</th>
+                <th>Aliases</th>
+                <th>Affected Versions</th>
+                <th>Fixed Versions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
-      <div class="table-container is-hidden" id="table-div">
-        <table
-          class="table is-bordered is-narrow is-hoverable is-fullwidth"
-          id="results-table"
-        >
-          <thead>
-            <tr>
-              <th>CVE</th>
-              <th>Datasource</th>
-              <th>Aliases</th>
-              <th>Affected Versions</th>
-              <th>Fixed Versions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
       <footer class="footer">
         <div class="content has-text-centered">
           <p>
