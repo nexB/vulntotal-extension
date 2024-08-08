@@ -1,59 +1,162 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Simulate Environment Preparation
-  const progressBar = document.getElementById("extension-loading");
-  progressBar.value = 0;
-  const interval = setInterval(() => {
-    progressBar.value += 20;
-    if (progressBar.value >= 100) {
-      hideLoadingDiv();
-      showHeroDiv();
-      clearInterval(interval);
-    }
-  }, 1000);
+// chrome.exe --allow-file-access-from-files
 
+import { PROGRESS_MSG, RESULTS_MSG, ERROR_MSG } from "./types.js";
+
+var vulntotal_worker = new Worker("worker.js");
+
+chrome.runtime.sendMessage({ type: "GET_API_KEYS" }, (response) => {
+  vulntotal_worker.postMessage({
+    type: "INIT",
+    constants: {
+      PROGRESS_MSG,
+      RESULTS_MSG,
+      ERROR_MSG,
+      githubAPIKey: response.GitHubAPIKey,
+      vulnerableCodeAPIKey: response.VulnerableCodeAPIKey,
+    },
+  });
+});
+
+function newDataSourceResult(source, results) {
+  if (!results) {
+    return;
+  }
+
+  results.forEach((row) => {
+    let rowHtml = `
+    <tr>
+      <td>${row.aliases[0]}</td>
+      <td>${getDatasourceLogo(source)}</td>
+      <td>${formatCommaSeparated(row.aliases)}</td>
+      <td>${formatCommaSeparated(row.affected_versions)}</td>
+      <td>${formatCommaSeparated(row.fixed_versions)}</td>
+    </tr>
+    `;
+    var tableRef = document
+      .getElementById(`results-table`)
+      .getElementsByTagName("tbody")[0];
+
+    var newRow = tableRef.insertRow(tableRef.rows.length);
+    newRow.innerHTML = rowHtml;
+    newRow.setAttribute("datasource", source);
+  });
+}
+
+function updateFilterOptions(result) {
+  const dropdownContent = document.getElementById("dropdown-content");
+  chrome.runtime.sendMessage({ type: "GET_ENABLED_DATASOURCES" }, (sources) => {
+    sources.forEach((source) => {
+      if (result[source] && result[source].length > 0) {
+        const option = document.createElement("a");
+        option.href = "#";
+        option.className = "dropdown-item";
+        option.dataset.source = source;
+        option.textContent = source;
+        dropdownContent.appendChild(option);
+      }
+    });
+  });
+}
+
+function filterResults(filterValue) {
+  const rows = document.querySelectorAll("#results-table tbody tr");
+  rows.forEach((row) => {
+    console.log(row.getAttribute("datasource"), " , ", filterValue);
+    if (
+      filterValue === "all" ||
+      row.getAttribute("datasource") === filterValue
+    ) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
+const purlRegex =
+  /^pkg:([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)@([0-9]+\.[0-9]+\.[0-9]+)$/;
+
+document.addEventListener("DOMContentLoaded", function () {
+  const inputField = document.getElementById("id_search");
+  inputField.addEventListener("input", function () {
+    const userInput = inputField.value;
+    if (userInput === "" || !purlRegex.test(userInput)) {
+      addInputWarning();
+    } else {
+      removeInputWarning();
+    }
+  });
   const sendButton = document.getElementById("submit_vuln");
   sendButton.addEventListener("click", async function () {
     showSearchButtonLoading();
-    clearTable();
-    const interval = setInterval(async () => {
-      const response = await fetch("vulntotal_output.json");
-      const vulntotal_results = await response.json();
-      // Show the table if it was hidden
-      showResultsTable();
-      // Hide hero div if it was visible
-      hideHeroDiv();
-      // Hide Search Button loading animation
+    const userInput = inputField.value;
+    if (userInput === "" || !purlRegex.test(userInput)) {
       hideSearchButtonLoading();
-      // Populate the table with the results
-      newDataSourceResult("deps", vulntotal_results.deps);
-      newDataSourceResult("safetydb", vulntotal_results.safetydb);
-      newDataSourceResult("oss_index", vulntotal_results.oss_index);
-      newDataSourceResult("osv", vulntotal_results.osv);
-      newDataSourceResult("snyk", vulntotal_results.snyk);
-
-      clearInterval(interval);
-    }, 2000);
+      return;
+    }
+    clearTable();
+    chrome.runtime.sendMessage(
+      { type: "GET_ENABLED_DATASOURCES" },
+      (enabledDatasources) => {
+        vulntotal_worker.postMessage({
+          purl: userInput,
+          enable: enabledDatasources,
+        });
+      }
+    );
   });
 
-  function newDataSourceResult(source, results) {
-    results.forEach((row) => {
-      let rowHtml = `
-      <tr>
-        <td>${row.aliases[0]}</td>
-        <td>${getDatasourceLogo(source)}</td>
-        <td>${formatCommaSeparated(row.aliases)}</td>
-        <td>${formatCommaSeparated(row.affected_versions)}</td>
-        <td>${formatCommaSeparated(row.fixed_versions)}</td>
-      </tr>
-      `;
-      var tableRef = document
-        .getElementById(`results-table`)
-        .getElementsByTagName("tbody")[0];
+  vulntotal_worker.addEventListener("message", function (event) {
+    if (event.data.type === PROGRESS_MSG) {
+      const progressBar = document.getElementById("extension-loading");
+      progressBar.value = event.data.value;
+      if (progressBar.value === 100) {
+        hideElementById("loading-div");
+        showElementById("hero-div");
+      }
+    } else if (event.data.type === RESULTS_MSG) {
+      // Show the table if it was hidden
+      showElementById("table-div");
+      showElementById("data-source-dropdown");
+      // Hide hero div if it was visible
+      hideElementById("hero-div");
+      // Hide the button loading spinner
+      const result = event.data.value;
+      console.log(result);
+      hideSearchButtonLoading();
+      // Add the results to the table
+      newDataSourceResult("deps", result["deps"]);
+      newDataSourceResult("safetydb", result["safetydb"]);
+      newDataSourceResult("osv", result["osv"]);
+      newDataSourceResult("snyk", result["snyk"]);
+      newDataSourceResult("oss_index", result["oss_index"]);
+      newDataSourceResult("gitlab", result["gitlab"]);
+      newDataSourceResult("github", result["github"]);
+      newDataSourceResult("vulnerablecode", result["vulnerablecode"]);
+      // Update filter options
+      updateFilterOptions(result);
+    }
+  });
 
-      var newRow = tableRef.insertRow(tableRef.rows.length);
-      newRow.innerHTML = rowHtml;
+  document
+    .getElementById("data-source-dropdown")
+    .addEventListener("click", function (event) {
+      const dropdown = event.currentTarget;
+      dropdown.classList.toggle("is-active");
     });
-  }
+
+  document
+    .getElementById("dropdown-content")
+    .addEventListener("click", function (event) {
+      if (event.target.classList.contains("dropdown-item")) {
+        event.preventDefault();
+        const filterValue = event.target.dataset.source;
+        filterResults(filterValue);
+        document
+          .getElementById("data-source-dropdown")
+          .classList.remove("is-active");
+      }
+    });
 
   const navBarBurger = document.getElementById("nav-burger");
   navBarBurger.addEventListener("click", () => {
@@ -64,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
   settingsButton.addEventListener("click", async function () {
     let queryOptions = { active: true };
     chrome.tabs.query(queryOptions, ([tab]) => {
-      if (String(tab.title).includes("VulnTotal")) {
+      if (tab.title === "VulnTotal Home") {
         chrome.tabs.update({ url: "settings.html" });
       } else {
         chrome.tabs.create({ url: "settings.html" });
@@ -76,9 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fullscreenButton.addEventListener("click", async function () {
     let queryOptions = { active: true };
     chrome.tabs.query(queryOptions, ([tab]) => {
-      if (String(tab.title).includes("VulnTotal")) {
-        chrome.tabs.update({ url: "popup.html" });
-      } else {
+      if (tab.title !== "VulnTotal Home") {
         chrome.tabs.create({ url: "popup.html" });
       }
     });
@@ -87,32 +188,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const refreshButton = document.getElementById("refresh-button");
   refreshButton.addEventListener("click", async function () {
     clearTable();
-    hideResultsTable();
-    showHeroDiv();
+    hideElementById("table-div");
+    hideElementById("data-source-dropdown");
+    showElementById("hero-div");
   });
 });
-
-const clearTable = () => {
-  var tableRef = document
-    .getElementById(`results-table`)
-    .getElementsByTagName("tbody")[0];
-  tableRef.innerHTML = "";
-};
-
-const hideResultsTable = () => {
-  const tableDiv = document.getElementById("table-div");
-  tableDiv.classList.add("is-hidden");
-};
-
-const showResultsTable = () => {
-  const tableDiv = document.getElementById("table-div");
-  tableDiv.classList.remove("is-hidden");
-};
-
-const hideLoadingDiv = () => {
-  const progressDiv = document.getElementById("loading-div");
-  progressDiv.classList.add("is-hidden");
-};
 
 const showSearchButtonLoading = () => {
   const sendButton = document.getElementById("submit_vuln");
@@ -124,14 +204,11 @@ const hideSearchButtonLoading = () => {
   sendButton.classList.remove("is-loading");
 };
 
-const hideHeroDiv = () => {
-  const heroDiv = document.getElementById("hero-div");
-  heroDiv.classList.add("is-hidden");
-};
-
-const showHeroDiv = () => {
-  const heroDiv = document.getElementById("hero-div");
-  heroDiv.classList.remove("is-hidden");
+const clearTable = () => {
+  var tableRef = document
+    .getElementById(`results-table`)
+    .getElementsByTagName("tbody")[0];
+  tableRef.innerHTML = "";
 };
 
 const formatCommaSeparated = (values) => {
@@ -141,6 +218,26 @@ const formatCommaSeparated = (values) => {
   });
   output += "</div>";
   return output;
+};
+
+const showElementById = (elementId) => {
+  const element = document.getElementById(elementId);
+  element.classList.remove("is-hidden");
+};
+
+const hideElementById = (elementId) => {
+  const element = document.getElementById(elementId);
+  element.classList.add("is-hidden");
+};
+
+const addInputWarning = () => {
+  const inputField = document.getElementById("id_search");
+  inputField.classList.add("is-warning");
+};
+
+const removeInputWarning = () => {
+  const inputField = document.getElementById("id_search");
+  inputField.classList.remove("is-warning");
 };
 
 const getDatasourceLogo = (datasource) => {
