@@ -6,18 +6,31 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.tabs.update({ url: "popup.html" });
   });
 
-  // Function to initialize checkboxes based on enabled data sources
+  const checkboxes = document.querySelectorAll("input[type='checkbox']");
+  const submitButton = document.getElementById("submit-btn");
+
+  // Function to check if any data sources are selected
+  function updateSubmitButtonState() {
+    const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    submitButton.disabled = !isAnyChecked;
+    if (!isAnyChecked) {
+      showNotification("warning", "Please select at least one data source.");
+    }
+  }
+
+  // Initialize checkboxes based on enabled data sources
   function initializeCheckboxes(enabledDataSources) {
-    const checkboxes = document.querySelectorAll("input[type='checkbox']");
     checkboxes.forEach((checkbox) => {
       const label = checkbox.parentElement.textContent.trim();
       if (enabledDataSources.includes(label.toLowerCase().replace(" ", "_"))) {
         checkbox.checked = true;
       }
+      checkbox.addEventListener('change', updateSubmitButtonState); // Add this line
     });
+    updateSubmitButtonState(); // Ensure correct initial state of the Submit button
   }
 
-  // Function to initialize API keys by their values
+  // Initialize API keys by their values
   function initializeApiKeys(apiKeys) {
     const gitHubTokenField = document.getElementById("github-api-key");
     const vulnerableCodeTokenField = document.getElementById(
@@ -66,10 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  const submitButton = document.getElementById("submit-btn");
   submitButton.addEventListener("click", () => {
     const checkedDataSources = [];
-    const checkboxes = document.querySelectorAll("input[type='checkbox']");
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked) {
         const label = checkbox.parentElement.textContent.trim();
