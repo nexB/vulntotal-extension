@@ -32,6 +32,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  //function to verify github token
+  async function verifyGithubToken(token) {
+    const response = await fetch("https://api.github.com/user", {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+  
+    if (response.status==200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // Function to toggle API key field visibility
   function toggleVisibility(inputId, buttonId) {
     const inputField = document.getElementById(inputId);
@@ -67,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const submitButton = document.getElementById("submit-btn");
-  submitButton.addEventListener("click", () => {
+  submitButton.addEventListener("click", async () => {
     const checkedDataSources = [];
     const checkboxes = document.querySelectorAll("input[type='checkbox']");
     checkboxes.forEach((checkbox) => {
@@ -97,22 +114,52 @@ document.addEventListener("DOMContentLoaded", function () {
       "vulnerablecode-api-key"
     ).value;
 
-    if (gitHubToken !== "" || vulnerableCodeToken !== "") {
-      chrome.runtime.sendMessage(
-        {
-          type: "SET_API_KEYS",
-          GitHubAPIKey: gitHubToken,
-          VulnerableCodeAPIKey: vulnerableCodeToken,
-        },
-        (response) => {
-          success = success && response.success;
-        }
-      );
+    // testing if github token is valid
+    let isGitHubValid = true
+    if (gitHubToken) {
+      isGitHubValid = await verifyGithubToken(gitHubToken);
+    }
+    console.log(isGitHubValid)
+
+    //testing if vulnerablecode token is valid
+    let isVulnCodeValid = true
+
+    //conditions satisfied only if both the tokens are empty or valid and empty or valid and valid
+    if((gitHubToken == "" || isGitHubValid) && (vulnerableCodeToken == "" || isVulnCodeValid)){
+      console.log("conditions satisfied")
+      //sends the github token only if it is there and valid
+      if(gitHubToken){
+        chrome.runtime.sendMessage(   
+          {
+            type: "SET_API_KEYS",
+            GitHubAPIKey: gitHubToken
+          },
+          (response) => {
+            success = success && response.success;
+          }
+        );
+      }
+      if(vulnerableCodeToken){
+        chrome.runtime.sendMessage(   
+          {
+            type: "SET_API_KEYS",
+            VulnerableCodeAPIKey: vulnerableCodeToken
+          },
+          (response) => {
+            success = success && response.success;
+          }
+        );
+      }
     }
 
-    if (success) {
+    if (success && isGitHubValid && isVulnCodeValid) {
       showNotification("success", "Settings updated successfully!");
-    } else {
+    }else if(isGitHubValid==false){
+      showNotification("danger", "Github Token Invalid!");
+    }else if(isVulnCodeValid==false){
+      showNotification("danger", "VulnerableCode Token Invalid!");
+    }
+    else {
       showNotification("danger", "Error updating settings. Please try again.");
     }
   });
