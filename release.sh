@@ -7,6 +7,8 @@ SRC_DIR="$(pwd)/src"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     CHROME_BASED_BROWSER="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    CHROME_BASED_BROWSER="google-chrome"
 else
     CHROME_BASED_BROWSER="chrome"
 fi
