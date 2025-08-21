@@ -84,7 +84,10 @@
 
         <div class="field">
           <label class="label">Enabled DataSources</label>
-          <div class="control is-flex is-flex-direction-column">
+          <div
+            class="control is-flex is-flex-direction-column"
+            id="datasource-checkboxes"
+          >
             <label class="checkbox">
               <input type="checkbox" />
               Deps
@@ -117,7 +120,52 @@
               <input type="checkbox" />
               VulnerableCode
             </label>
+            <label class="checkbox">
+              <input type="checkbox" />
+              VulnerableCode Local
+            </label>
           </div>
+        </div>
+
+        <div class="field">
+          <label class="checkbox">
+            <input type="checkbox" id="enable-live-eval" />
+            Enable Local VulnerableCode Live evaluation
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="label">Local VulnerableCode Host</label>
+          <div class="control has-icons-left">
+            <span class="icon is-small is-left">
+              <i class="fa-solid fa-server"></i>
+            </span>
+            <input
+              class="input"
+              type="text"
+              placeholder="e.g. 127.0.0.1"
+              id="local-vc-host"
+            />
+          </div>
+          <p class="help">Leave empty to use default</p>
+        </div>
+
+        <div class="field">
+          <label class="label">Local VulnerableCode Port</label>
+          <div class="control has-icons-left">
+            <span class="icon is-small is-left">
+              <i class="fa-solid fa-plug"></i>
+            </span>
+            <input
+              class="input"
+              type="number"
+              min="1"
+              max="65535"
+              placeholder="e.g. 8001"
+              id="local-vc-port"
+            />
+          </div>
+          <p class="help">Leave empty to use default</p>
         </div>
 
         <div class="field is-grouped">

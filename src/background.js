@@ -36,17 +36,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.VulnerableCodeAPIKey) {
         keys.VulnerableCodeAPIKey = request.VulnerableCodeAPIKey;
       }
+      if (typeof request.LocalVCHost === "string") {
+        keys.LocalVCHost = request.LocalVCHost;
+      }
+      if (
+        typeof request.LocalVCPort === "string" ||
+        typeof request.LocalVCPort === "number"
+      ) {
+        keys.LocalVCPort = request.LocalVCPort;
+      }
+      if (typeof request.EnableLiveEvaluation === "boolean") {
+        keys.EnableLiveEvaluation = request.EnableLiveEvaluation;
+      }
       chrome.storage.sync.set(keys, () => {
         sendResponse({ success: true });
       });
       return true;
     } else if (request.type === "GET_API_KEYS") {
       chrome.storage.sync.get(
-        ["GitHubAPIKey", "VulnerableCodeAPIKey"],
+        [
+          "GitHubAPIKey",
+          "VulnerableCodeAPIKey",
+          "LocalVCHost",
+          "LocalVCPort",
+          "EnableLiveEvaluation",
+        ],
         (result) => {
           sendResponse({
             GitHubAPIKey: result.GitHubAPIKey,
             VulnerableCodeAPIKey: result.VulnerableCodeAPIKey,
+            LocalVCHost: result.LocalVCHost || "",
+            LocalVCPort: result.LocalVCPort || "",
+            EnableLiveEvaluation:
+              typeof result.EnableLiveEvaluation === "boolean"
+                ? result.EnableLiveEvaluation
+                : false,
           });
         }
       );
