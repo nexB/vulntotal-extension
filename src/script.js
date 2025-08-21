@@ -13,6 +13,12 @@ chrome.runtime.sendMessage({ type: "GET_API_KEYS" }, (response) => {
       ERROR_MSG,
       githubAPIKey: response.GitHubAPIKey,
       vulnerableCodeAPIKey: response.VulnerableCodeAPIKey,
+      localVulnerableCodeHost: response.LocalVCHost || "",
+      localVulnerableCodePort: response.LocalVCPort || "",
+      enableLiveEvaluation:
+        typeof response.EnableLiveEvaluation === "boolean"
+          ? response.EnableLiveEvaluation
+          : false,
     },
   });
 });
@@ -133,6 +139,10 @@ document.addEventListener("DOMContentLoaded", function () {
       newDataSourceResult("gitlab", result["gitlab"]);
       newDataSourceResult("github", result["github"]);
       newDataSourceResult("vulnerablecode", result["vulnerablecode"]);
+      newDataSourceResult(
+        "vulnerablecode_local",
+        result["vulnerablecode_local"]
+      );
       // Update filter options
       updateFilterOptions(result);
     }
@@ -287,6 +297,13 @@ const getDatasourceLogo = (datasource) => {
         '<img src="static/images/vulnerablecode_logo.png" alt="vulnerablecode">';
       output += "</figure>";
       output += "<p>VulnerableCode</p>";
+      break;
+    case "vulnerablecode_local":
+      output += '<figure class="image is-48x48">';
+      output +=
+        '<img src="static/images/vulnerablecode_logo.png" alt="vulnerablecode_local">';
+      output += "</figure>";
+      output += "<p>Local VulnerableCode</p>";
       break;
     default:
       break;

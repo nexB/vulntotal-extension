@@ -16,22 +16,39 @@ class VulnTotalWorker {
       "./packages/PyYAML-6.0.1-cp312-cp312-musllinux_1_1_x86_64.whl",
       "./packages/six-1.16.0-py2.py3-none-any.whl",
       "./packages/texttable-1.7.0-py2.py3-none-any.whl",
-      "./packages/fetchcode-0.3.0-py3-none-any.whl",
+      "./packages/fetchcode-0.6.0-py3-none-any.whl",
       "./packages/soupsieve-2.5-py3-none-any.whl",
       "./packages/python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
       "./packages/beautifulsoup4-4.12.3-py3-none-any.whl",
       "./packages/wcwidth-0.2.13-py2.py3-none-any.whl",
       "./packages/ftfy-6.2.0-py3-none-any.whl",
       "./packages/pyodide_http-0.2.1-py3-none-any.whl",
-      "./packages/vulntotal-0.1-py3-none-any.whl",
+      "./packages/univers-31.0.0-py3-none-any.whl",
+      "./packages/attrs-25.3.0-py3-none-any.whl",
+      "./packages/semantic_version-2.10.0-py2.py3-none-any.whl",
+      "./packages/semver-3.0.4-py3-none-any.whl",
+      "./packages/vulnerablecode-37.0.0-py3-none-any.whl",
     ];
     this.pyodide = null;
   }
 
-  async init(progressMsg, githubAPIKey, vulnerableCodeAPIKey) {
+  async init(
+    progressMsg,
+    githubAPIKey,
+    vulnerableCodeAPIKey,
+    localVulnerableCodeHost,
+    localVulnerableCodePort,
+    enableLiveEvaluation
+  ) {
     await this.loadPyodide();
     await this.loadPackages(progressMsg);
-    this.setupPythonEnvironment(githubAPIKey, vulnerableCodeAPIKey);
+    this.setupPythonEnvironment(
+      githubAPIKey,
+      vulnerableCodeAPIKey,
+      localVulnerableCodeHost,
+      localVulnerableCodePort,
+      enableLiveEvaluation
+    );
   }
 
   async loadPyodide() {
@@ -50,11 +67,17 @@ class VulnTotalWorker {
     }
   }
 
-  setupPythonEnvironment(githubAPIKey, vulnerableCodeAPIKey) {
+  setupPythonEnvironment(
+    githubAPIKey,
+    vulnerableCodeAPIKey,
+    localVulnerableCodeHost,
+    localVulnerableCodePort,
+    enableLiveEvaluation
+  ) {
     this.pyodide.runPython("from io import StringIO");
     this.pyodide.runPython("from dotenv import load_dotenv");
     this.pyodide.runPython(
-      `config = StringIO("""GH_TOKEN=${githubAPIKey}\nVCIO_TOKEN=${vulnerableCodeAPIKey}""")`
+      `config = StringIO("""GH_TOKEN=${githubAPIKey}\nVCIO_TOKEN=${vulnerableCodeAPIKey}\nVCIO_HOST=${localVulnerableCodeHost}\nVCIO_PORT=${localVulnerableCodePort}\nENABLE_LIVE_EVAL=${enableLiveEvaluation}""")`
     );
     this.pyodide.runPython("load_dotenv(stream=config)");
     this.pyodide.runPython(`

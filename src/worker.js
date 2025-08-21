@@ -11,10 +11,16 @@ self.onmessage = async function (event) {
     ERROR_MSG = event.data.constants.ERROR_MSG;
     githubAPIKey = event.data.constants.githubAPIKey;
     vulnerableCodeAPIKey = event.data.constants.vulnerableCodeAPIKey;
+    localVulnerableCodeHost = event.data.constants.localVulnerableCodeHost;
+    localVulnerableCodePort = event.data.constants.localVulnerableCodePort;
+    enableLiveEvaluation = event.data.constants.enableLiveEvaluation;
     await vulnTotalWorker.init(
       PROGRESS_MSG,
       githubAPIKey,
-      vulnerableCodeAPIKey
+      vulnerableCodeAPIKey,
+      localVulnerableCodeHost,
+      localVulnerableCodePort,
+      enableLiveEvaluation
     );
   } else {
     const result = await vulnTotalWorker.runDatasources(

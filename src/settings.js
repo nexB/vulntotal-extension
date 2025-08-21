@@ -8,7 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to initialize checkboxes based on enabled data sources
   function initializeCheckboxes(enabledDataSources) {
-    const checkboxes = document.querySelectorAll("input[type='checkbox']");
+    const checkboxes = document
+      .getElementById("datasource-checkboxes")
+      .querySelectorAll("input[type='checkbox']");
     checkboxes.forEach((checkbox) => {
       const label = checkbox.parentElement.textContent.trim();
       if (enabledDataSources.includes(label.toLowerCase().replace(" ", "_"))) {
@@ -18,17 +20,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to initialize API keys by their values
-  function initializeApiKeys(apiKeys) {
+  function initializeApiKeys(configuration) {
     const gitHubTokenField = document.getElementById("github-api-key");
     const vulnerableCodeTokenField = document.getElementById(
       "vulnerablecode-api-key"
     );
+    const localHostField = document.getElementById("local-vc-host");
+    const localPortField = document.getElementById("local-vc-port");
+    const liveEvalField = document.getElementById("enable-live-eval");
 
-    if (apiKeys.GitHubAPIKey) {
-      gitHubTokenField.value = apiKeys.GitHubAPIKey;
+    if (configuration.GitHubAPIKey) {
+      gitHubTokenField.value = configuration.GitHubAPIKey;
     }
-    if (apiKeys.VulnerableCodeAPIKey) {
-      vulnerableCodeTokenField.value = apiKeys.VulnerableCodeAPIKey;
+    if (configuration.VulnerableCodeAPIKey) {
+      vulnerableCodeTokenField.value = configuration.VulnerableCodeAPIKey;
+    }
+    if (configuration.LocalVCHost) {
+      localHostField.value = configuration.LocalVCHost;
+    }
+    if (configuration.LocalVCPort) {
+      localPortField.value = configuration.LocalVCPort;
+    }
+    if (typeof configuration.EnableLiveEvaluation === "boolean") {
+      liveEvalField.checked = configuration.EnableLiveEvaluation;
     }
   }
 
@@ -69,7 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const submitButton = document.getElementById("submit-btn");
   submitButton.addEventListener("click", () => {
     const checkedDataSources = [];
-    const checkboxes = document.querySelectorAll("input[type='checkbox']");
+    const checkboxes = document
+      .getElementById("datasource-checkboxes")
+      .querySelectorAll("input[type='checkbox']");
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked) {
         const label = checkbox.parentElement.textContent.trim();
@@ -96,13 +112,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const vulnerableCodeToken = document.getElementById(
       "vulnerablecode-api-key"
     ).value;
+    const localHost = document.getElementById("local-vc-host").value;
+    const localPort = document.getElementById("local-vc-port").value;
+    const enableLiveEval = document.getElementById("enable-live-eval").checked;
 
-    if (gitHubToken !== "" || vulnerableCodeToken !== "") {
+    if (
+      gitHubToken !== "" ||
+      vulnerableCodeToken !== "" ||
+      localHost !== "" ||
+      localPort !== "" ||
+      typeof enableLiveEval === "boolean"
+    ) {
       chrome.runtime.sendMessage(
         {
           type: "SET_API_KEYS",
           GitHubAPIKey: gitHubToken,
           VulnerableCodeAPIKey: vulnerableCodeToken,
+          LocalVCHost: localHost,
+          LocalVCPort: localPort,
+          EnableLiveEvaluation: enableLiveEval,
         },
         (response) => {
           success = success && response.success;
